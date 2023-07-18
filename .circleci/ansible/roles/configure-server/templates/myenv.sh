@@ -1,9 +1,9 @@
 export TYPEORM_CONNECTION=postgres
 export TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts
-export TYPEORM_HOST=royalboe-database.cbxzwgsbscjp.us-east-1.rds.amazonaws.com
-export TYPEORM_PORT=5432
-export TYPEORM_USERNAME=postgres
-export TYPEORM_PASSWORD=postgres123
-export TYPEORM_DATABASE=postgres
+export TYPEORM_HOST=$PROJ_HOST
+export TYPEORM_PORT=$PROJ_PORT
+export TYPEORM_USERNAME=$PROJ_USERNAME
+export TYPEORM_PASSWORD=$PROJ_PASSWORD
+export TYPEORM_DATABASE=$PROJ_DATABASE
 export TYPEORM_MIGRATIONS=./src/migrations/*.ts
 export TYPEORM_MIGRATIONS_DIR=./src/migrations
