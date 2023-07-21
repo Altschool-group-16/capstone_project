@@ -16,6 +16,31 @@ resource "aws_internet_gateway" "IGW" {
   tags = var.proj-tag
 }
 
+# Create EIP for NAT Gateway
+resource "aws_eip" "eip_1" {
+  vpc = true
+  tags = var.proj-tag
+}
+
+resource "aws_eip" "eip_2" {
+  vpc = true
+  tags = var.proj-tag
+}
+
+# Create NAT Gateway
+resource "aws_nat_gateway" "nat_1" {
+  allocation_id = aws_eip.eip_1.id
+  subnet_id     = aws_subnet.publicsubnet_1.id
+  vpc_id        = aws_vpc.capstone_Net.id
+  tags = var.proj-tag
+}
+
+resource "aws_nat_gateway" "nat_2" {
+  allocation_id = aws_eip.eip_2.id
+  subnet_id = aws_subnet.publicsubnet_2.id
+  vpc_id = aws_vpc.capstone_Net.id
+  tags = var.proj-tag
+}
 
 # Create Public Subnets.
 resource "aws_subnet" "publicsubnet_1" {
@@ -37,7 +62,7 @@ resource "aws_subnet" "publicsubnet_2" {
 }
 
 
-# Route table for Public Subnet's
+# Route table for Public Subnets
 resource "aws_route_table" "PublicRT" {
   vpc_id =  aws_vpc.Altschool_Net.id
   route {
@@ -73,6 +98,38 @@ resource "aws_subnet" "private_app_subnet_2" {
     map_public_ip_on_launch = false
     availability_zone       = data.aws_availability_zones.zones.names[1]
 }
+
+# Private route table for app subnets
+resource "aws_route_table" "PrivRT" {
+  vpc_id =  aws_vpc.capstone_Net.id
+  route {
+    cidr_block = var.destination_cidr_block
+    gateway_id = aws_nat_gateway.nat_1.id
+  }
+  tags = var.proj-tag
+}
+
+# Route table Association with Private app subnet 1
+resource "aws_route_table_association" "PrivRTassociation_1" {
+  subnet_id = aws_subnet.private_app_subnet_1.id
+  route_table_id = aws_route_table.PrivRT.id
+}
+
+resource "aws_route_table" "PrivRT_2" {
+  vpc_id =  aws_vpc.capstone_Net.id
+  route {
+    cidr_block = var.destination_cidr_block
+    gateway_id = aws_nat_gateway.nat_2.id
+  }
+  tags = var.proj-tag
+}
+
+# Route table Association with Private app subnet 2
+resource "aws_route_table_association" "PrivRTassociation_2" {
+  subnet_id = aws_subnet.private_app_subnet_2.id
+  route_table_id = aws_route_table.PrivRT_2.id
+}
+
 
 # Create the private data subnets
 
