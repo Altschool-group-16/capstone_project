@@ -36,14 +36,6 @@ resource "aws_subnet" "publicsubnet_2" {
   tags = var.proj-tag
 }
 
-resource "aws_subnet" "publicsubnet_3" {
-  vpc_id =  aws_vpc.Altschool_Net.id
-  cidr_block = "${var.public_subnets[2]}"
-  map_public_ip_on_launch = true
-  # availability_zone       = data.aws_availability_zones.zones.names[2]
-  availability_zone = var.availability_zones[2]
-  tags = var.proj-tag
-}
 
 # Route table for Public Subnet's
 resource "aws_route_table" "PublicRT" {
@@ -55,7 +47,7 @@ resource "aws_route_table" "PublicRT" {
   tags = var.proj-tag
 }
 
-# Route table Association with Public Subnet's
+# Route table Association with Public Subnets
 resource "aws_route_table_association" "PublicRTassociation_1" {
   subnet_id = aws_subnet.publicsubnet_1.id
   route_table_id = aws_route_table.PublicRT.id
@@ -63,11 +55,6 @@ resource "aws_route_table_association" "PublicRTassociation_1" {
 
 resource "aws_route_table_association" "PublicRTassociation_2" {
     subnet_id = aws_subnet.publicsubnet_2.id
-    route_table_id = aws_route_table.PublicRT.id
-}
-
-resource "aws_route_table_association" "PublicRTassociation_3" {
-    subnet_id = aws_subnet.publicsubnet_3.id
     route_table_id = aws_route_table.PublicRT.id
 }
 
@@ -119,17 +106,17 @@ resource "aws_security_group" "web_server_SG" {
   }
 
   ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
+    description = "Load Balancer"
+    from_port   = 3030
+    to_port     = 3030
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
+    description = "Prometheus"
+    from_port   = 9000
+    to_port     = 9000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -145,25 +132,24 @@ resource "aws_security_group" "web_server_SG" {
 }
 
 # Create a Security Group for the load balancer
-resource "aws_security_group" "load_balancer_SG" {
+resource "aws_security_group" "backend_load_balancer_SG" {
   name        = "My_LB_SG"
-  description = "Allow HTTP and HTTPS traffic"
+  description = "Allow frontend traffic"
   vpc_id      = aws_vpc.Altschool_Net.id
 
   ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
+    description = "Frontend traffic"
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  egress {
+    from_port = 3030
+    to_port   = 3030
+    protocol  = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {
