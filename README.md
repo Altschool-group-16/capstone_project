@@ -10,7 +10,7 @@ In this project, we attempt to prove our understanding of using the following to
 - Grafana and Prometheus for monitoring, logging and data visualization
 - Blue Green Deployment strategy
 
-We used a serverless frontend by storing our frontend files in an S3 bucket and exposing it using dloudfront.
+We used a serverless frontend by storing our frontend files in an S3 bucket and exposing it using cloudfront.
 
 ![Diagram of CI/CD Pipeline we will be building.](./application-pipeline.png)
 
