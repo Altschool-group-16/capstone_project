@@ -12,18 +12,18 @@ resource "aws_vpc" "Capstone_Net" {
 
 # Create Internet Gateway and attach it to VPC
 resource "aws_internet_gateway" "IGW" {
-  vpc_id =  aws_vpc.Altschool_Net.id 
+  vpc_id =  aws_vpc.Capstone_Net.id 
   tags = var.proj-tag
 }
 
 # Create EIP for NAT Gateway
 resource "aws_eip" "eip_1" {
-  vpc = true
+  domain = "vpc"
   tags = var.proj-tag
 }
 
 resource "aws_eip" "eip_2" {
-  vpc = true
+  domain = "vpc"
   tags = var.proj-tag
 }
 
