@@ -553,6 +553,9 @@ workflows:
       - scan-backend:
           requires:
             - build-backend
+  clean-up:
+    jobs:
+      - tear-down-infra
   # default:
   #   jobs:
   #     - build-frontend
